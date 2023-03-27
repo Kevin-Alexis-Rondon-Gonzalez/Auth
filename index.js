@@ -51,7 +51,17 @@ app.post('/login', async(req, res) => {
         res.status(500).send(err.message)
     }
 })
-
+/*
+//created middleware in express
+    app.get('/lele', (req,res,next) => {
+        req.user ={id:'lele'}
+        next()
+        },
+        (req,res,next)=>{
+        console.log('lala', req.user)
+        res.send('ok')
+    })
+*/
 app.listen(3000, ()=>{
     console.log('Listening in port 3000')
 })
