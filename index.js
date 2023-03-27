@@ -10,6 +10,8 @@ mongoose.connect('mongodb+srv://kevinRondon:10r3n20R6.@clusterpruebaholamundo.t3
 const app = express() //app init
 app.use(express.json()) //Data reading
 
+const signToken = _id => jwt.sign({_id},"mySecret") 
+
 app.post('/register', async(req, res) => {
     const {body} = req
     console.log({body})
@@ -21,7 +23,8 @@ app.post('/register', async(req, res) => {
         const salt = await bcrypt.genSalt()
         const hashed = await bcrypt.hash(body.password, salt)
         const user = await User.create({email:body.email, password: hashed, salt})
-        res.send({_id: user._id})
+        const signed= signToken(user._id)//encrypting the id in jsonWebToken
+        res.status(201).send(signed) 
     }catch(err){
         console.log(err)
         res.status(500).send(err.message) //send type error
