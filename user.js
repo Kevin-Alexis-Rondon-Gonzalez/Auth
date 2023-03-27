@@ -5,4 +5,4 @@ const User = mongoose.model('User', { //name and model the scheme
     password: {type:String, requited:true},
     salt: {type:String, required:true},
 })
-module.express = User
+module.exports = User
