@@ -1,15 +1,15 @@
-const express = require("express");
+const express = require("express")
 const mongoose =  require("mongoose")
 const bcrypt = require('bcrypt')
 const jwt = require("jsonwebtoken")
-const expressJwt = require("express-jwt")
+const { expressjwt: expressjwt } = require("express-jwt") // new forms of request according to the documentation
 const User = require("./user")
 
 mongoose.connect('mongodb+srv://kevinRondon:10r3n20R6.@clusterpruebaholamundo.t3bysb7.mongodb.net/auth?retryWrites=true&w=majority') // The database name is changed but the same cluster is used 
 
 const app = express() //app init
 app.use(express.json()) //Data reading
-
+const validationJwt = expressjwt({ secret:'mySecret', algorithms: ["HS256"]}) //middleware for validation
 const signToken = _id => jwt.sign({_id},"mySecret") 
 
 app.post('/register', async(req, res) => {
@@ -51,17 +51,26 @@ app.post('/login', async(req, res) => {
         res.status(500).send(err.message)
     }
 })
-/*
-//created middleware in express
-    app.get('/lele', (req,res,next) => {
-        req.user ={id:'lele'}
+//created middleware in express for validated
+const findAssignUser = async(req, res, next) =>{
+    try {
+        const user = await User.findById(req.auth._id)//with auth why
+        if(!user){
+            return res.status(401)
+        }
+        req.user = user
         next()
-        },
-        (req,res,next)=>{
-        console.log('lala', req.user)
-        res.send('ok')
-    })
-*/
+    }catch(err){
+        next(err)
+    }
+}
+const isAuthenticated = express.Router().use(validationJwt, findAssignUser)//validate both middleware and call only one to encapsulate the best
+
+app.get('/lele',isAuthenticated,(req,res)=>{
+    res.send(req.user)
+})
+
+
 app.listen(3000, ()=>{
     console.log('Listening in port 3000')
 })
