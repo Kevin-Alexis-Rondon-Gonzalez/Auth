@@ -9,8 +9,9 @@ mongoose.connect('mongodb+srv://kevinRondon:10r3n20R6.@clusterpruebaholamundo.t3
 
 const app = express() //app init
 app.use(express.json()) //Data reading
-const validationJwt = expressjwt({ secret:'mySecret', algorithms: ["HS256"]}) //middleware for validation
-const signToken = _id => jwt.sign({_id},"mySecret") 
+
+const validationJwt = expressjwt({ secret:process.env.SECRET, algorithms: ["HS256"]}) //middleware for validation
+const signToken = _id => jwt.sign({_id},process.env.SECRET) //Hiding the encryption signature with an environment variable this changes when committing to production 
 
 app.post('/register', async(req, res) => {
     const {body} = req
