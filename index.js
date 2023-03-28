@@ -67,7 +67,15 @@ const findAssignUser = async(req, res, next) =>{
 const isAuthenticated = express.Router().use(validationJwt, findAssignUser)//validate both middleware and call only one to encapsulate the best
 
 app.get('/lele',isAuthenticated,(req,res)=>{
+    throw new Error('new error')
     res.send(req.user)
+})
+app.use((err, req, res, next)=>{
+    console.log('my new error', err.stack) //show in console
+    next(err)
+})
+app.use((err, req, res, next)=>{ //show users
+    res.send('Error') //here html with error
 })
 
 
